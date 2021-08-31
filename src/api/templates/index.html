@@ -17,9 +17,9 @@
 
     <div class="container px-0 mx-0">
         <div class="row">
-            <div class="col-4 px-5" style="background-color: lightgreen;">
+            <div class="col-4 px-5" style="background-color: lightgreen ;">
                 <div id="form">
-                    <form action="http://127.0.0.1:5000/" method="POST">
+                    <form action="{{ url_for('home') }}" method="POST">
                         <div class="form-group my-3">
                             <input type="hidden" name="btn_identifier" value="article_submission" />
                             <label for="headline">Headline</label>
@@ -36,14 +36,14 @@
                     </form>
                     <div class='row mt-4'>
                         <div class='col'>
-                            <form action="http://127.0.0.1:5000/" method="POST">
+                            <form action="{{ url_for('home') }}" method="POST">
                                 <input type="hidden" name="btn_identifier" value="clear_values" />
                                 <button type="submit" class="btn btn-secondary">Clear</button>
                                 <!-- <input type="submit" value="submit"> -->
                             </form>
                         </div>
                         <div class='col'>
-                            <form action="http://127.0.0.1:5000/" method="POST">
+                            <form action="{{ url_for('home') }}" method="POST">
                                 <input type="hidden" name="btn_identifier" value="feeling_lucky" />
                                 <button type="submit" class="btn btn-secondary">I am feeling lucky</button>
                                 <!-- <input type="submit" value="submit"> -->

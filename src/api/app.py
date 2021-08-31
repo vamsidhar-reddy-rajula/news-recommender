@@ -359,7 +359,7 @@ class Recommender(Resource):
         )
 
 
-api.add_resource(Recommender, "/")
+api.add_resource(Recommender, "/", endpoint="home")
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=False)
