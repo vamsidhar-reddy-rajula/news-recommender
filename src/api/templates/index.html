@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous"> -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/main.css')}}">
+
+    <meta charset="utf-8">
+    <title>News Recommender | Catch up with relevant news from the past</title>
+</head>
+
+<body>
+
+    <div class="container px-0 mx-0">
+        <div class="row">
+            <div class="col-4 px-5" style="background-color: grey;">
+                <div id="form">
+                    <form action="http://127.0.0.1:5000/" method="POST">
+                        <div class="form-group my-3">
+                            <input type="hidden" name="btn_identifier" value="article_submission" />
+                            <label for="headline">Headline</label>
+                            <textarea class="form-control mt-2" id="headline" name="headline" wrap="soft"
+                                style="height: 100px;">{{ input['heading'] }}</textarea>
+                        </div>
+                        <div class="form-group my-3">
+                            <label for="article-body">Article</label>
+                            <textarea class="form-control mt-2" id="article-body" name="article-body"
+                                style="height: 350px;">{{ input['article-body'] }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <!-- <input type="submit" value="submit"> -->
+                    </form>
+                    <div class='row mt-4'>
+                        <div class='col'>
+                            <form action="http://127.0.0.1:5000/" method="POST">
+                                <input type="hidden" name="btn_identifier" value="clear_values" />
+                                <button type="submit" class="btn btn-primary">Clear</button>
+                                <!-- <input type="submit" value="submit"> -->
+                            </form>
+                        </div>
+                        <div class='col'>
+                            <form action="http://127.0.0.1:5000/" method="POST">
+                                <input type="hidden" name="btn_identifier" value="feeling_lucky" />
+                                <button type="submit" class="btn btn-primary">I am feeling lucky</button>
+                                <!-- <input type="submit" value="submit"> -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class='row mx-4 my-4'>
+                    {% if data|length != 0 %}
+                    <h2>Recommended Articles</h2>
+                    {% for item in data %}
+                    <div class="card m-2" style="width: 24rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{item.article_heading}}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{item.similarity_score}}% similar</h6>
+                            <p class="card-text">{{item.article_subheading}}</p>
+                            <a href="{{item.article_url}}" class="btn btn-primary" target="_blank">Visit source</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</body>

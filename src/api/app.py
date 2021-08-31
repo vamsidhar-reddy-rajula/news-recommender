@@ -1,10 +1,11 @@
 from os import remove
-from flask import Flask, request, jsonify, render_template, make_response
+from flask import Flask, json, request, jsonify, render_template, make_response
 from flask_restful import Api, Resource
 import joblib
 import numpy as np
 import pandas as pd
 import contractions
+import random
 
 from nltk.tokenize import word_tokenize
 from string import punctuation
@@ -162,10 +163,13 @@ def get_similar_articles(similarity_scores, top_n_values=5):
         data = pd.DataFrame(
             {
                 "article_heading": df_train.iloc[indices].article_heading,
-                "Similarity score": values[:, i],
+                "similarity_score": np.round(values[:, i] * 100, decimals=2),
                 "article_date": df_train.iloc[indices].article_published_on,
+                "article_url": df_train.iloc[indices].article_url,
+                "article_subheading": df_train.iloc[indices].article_subheading,
             }
         )
+        data = data.fillna("")
         for _, row in data.iterrows():
             results.append(row.to_dict())
     return results
@@ -294,20 +298,65 @@ def get_results(heading=None, text=None):
 
 
 class Recommender(Resource):
+    data = []
+    input = {"heading": "", "article-body": ""}
+
     def get(self):
         """
         Default page
         """
-        args = request.args
-        heading = args["heading"]
-        text = args["text"]
-        return jsonify(get_results(heading=heading, text=text))
+        headers = {"Content-Type": "text/html"}
+        return make_response(
+            render_template(
+                "index.html", data=Recommender.data, input=Recommender.input
+            ),
+            200,
+            headers,
+        )
 
     def post(self):
         """
         Return relevant articles as json for the posted text
         """
-        pass
+        if request.form["btn_identifier"] == "article_submission":
+            # args = request.args
+            # heading = args["heading"]
+            # text = args["text"]
+            heading = request.form["headline"]
+            text = request.form["article-body"]
+            Recommender.input["heading"] = heading
+            Recommender.input["article-body"] = text
+            # return jsonify(get_results(heading=heading, text=text))
+            Recommender.data = get_results(
+                heading=Recommender.input["heading"],
+                text=Recommender.input["article-body"],
+            )
+        elif request.form["btn_identifier"] == "clear_values":
+            Recommender.data.clear()
+            Recommender.input["heading"] = ""
+            Recommender.input["article-body"] = ""
+        elif request.form["btn_identifier"] == "feeling_lucky":
+            test_indices = random.sample(range(df_test.shape[0]), 1)
+            Recommender.input["heading"] = df_test.iloc[
+                test_indices
+            ].article_heading.values[0]
+            Recommender.input["article-body"] = df_test.iloc[
+                test_indices
+            ].article_body.values[0]
+            # return jsonify(get_results(heading=heading, text=text))
+            Recommender.data = get_results(
+                heading=Recommender.input["heading"],
+                text=Recommender.input["article-body"],
+            )
+
+        headers = {"Content-Type": "text/html"}
+        return make_response(
+            render_template(
+                "index.html", data=Recommender.data, input=Recommender.input
+            ),
+            200,
+            headers,
+        )
 
 
 api.add_resource(Recommender, "/")
