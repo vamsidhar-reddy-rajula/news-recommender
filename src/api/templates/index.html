@@ -17,7 +17,7 @@
 
     <div class="container px-0 mx-0">
         <div class="row">
-            <div class="col-4 px-5" style="background-color: grey;">
+            <div class="col-4 px-5" style="background-color: lightgreen;">
                 <div id="form">
                     <form action="http://127.0.0.1:5000/" method="POST">
                         <div class="form-group my-3">
@@ -38,14 +38,14 @@
                         <div class='col'>
                             <form action="http://127.0.0.1:5000/" method="POST">
                                 <input type="hidden" name="btn_identifier" value="clear_values" />
-                                <button type="submit" class="btn btn-primary">Clear</button>
+                                <button type="submit" class="btn btn-secondary">Clear</button>
                                 <!-- <input type="submit" value="submit"> -->
                             </form>
                         </div>
                         <div class='col'>
                             <form action="http://127.0.0.1:5000/" method="POST">
                                 <input type="hidden" name="btn_identifier" value="feeling_lucky" />
-                                <button type="submit" class="btn btn-primary">I am feeling lucky</button>
+                                <button type="submit" class="btn btn-secondary">I am feeling lucky</button>
                                 <!-- <input type="submit" value="submit"> -->
                             </form>
                         </div>
@@ -62,7 +62,8 @@
                             <h5 class="card-title">{{item.article_heading}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{item.similarity_score}}% similar</h6>
                             <p class="card-text">{{item.article_subheading}}</p>
-                            <a href="{{item.article_url}}" class="btn btn-primary" target="_blank">Visit source</a>
+                            <a href="{{item.article_url}}" class="btn btn-outline-primary" target="_blank">Visit
+                                source</a>
                         </div>
                     </div>
                     {% endfor %}
