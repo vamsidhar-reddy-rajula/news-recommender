@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import contractions
 import random
+import os
 
 from nltk.tokenize import word_tokenize
 from string import punctuation
@@ -116,38 +117,39 @@ def get_topic_vectors(X, model, fit=False):
 
 
 def get_saved_models(n_components):
+    base_path = "D:\\Models\\news recommender\\"
     if n_components == 300:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_1513_300")
-        vectorizer = joblib.load(f"../models/lda_model_0830_1513_300")
-        model = joblib.load(f"../models/topic_vector_train_0830_1513_300")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1513_300")
+        vectorizer = joblib.load(base_path + "lda_model_0830_1513_300")
+        model = joblib.load(base_path + "topic_vector_train_0830_1513_300")
     elif n_components == 240:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_1406_240")
-        vectorizer = joblib.load(f"../models/lda_model_0830_1406_240")
-        model = joblib.load(f"../models/topic_vector_train_0830_1406_240")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1406_240")
+        vectorizer = joblib.load(base_path + "lda_model_0830_1406_240")
+        model = joblib.load(base_path + "topic_vector_train_0830_1406_240")
     elif n_components == 180:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_1304_180")
-        vectorizer = joblib.load(f"../models/lda_model_0830_1304_180")
-        model = joblib.load(f"../models/topic_vector_train_0830_1304_180")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1304_180")
+        vectorizer = joblib.load(base_path + "lda_model_0830_1304_180")
+        model = joblib.load(base_path + "topic_vector_train_0830_1304_180")
     elif n_components == 150:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_1205_150")
-        vectorizer = joblib.load(f"../models/lda_model_0830_1205_150")
-        model = joblib.load(f"../models/topic_vector_train_0830_1205_150")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1205_150")
+        vectorizer = joblib.load(base_path + "lda_model_0830_1205_150")
+        model = joblib.load(base_path + "topic_vector_train_0830_1205_150")
     elif n_components == 120:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_1109_120")
-        vectorizer = joblib.load(f"../models/lda_model_0830_1109_120")
-        model = joblib.load(f"../models/topic_vector_train_0830_1109_120")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1109_120")
+        vectorizer = joblib.load(base_path + "lda_model_0830_1109_120")
+        model = joblib.load(base_path + "topic_vector_train_0830_1109_120")
     elif n_components == 90:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_1015_90")
-        vectorizer = joblib.load(f"../models/lda_model_0830_1015_90")
-        model = joblib.load(f"../models/topic_vector_train_0830_1015_90")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1015_90")
+        vectorizer = joblib.load(base_path + "lda_model_0830_1015_90")
+        model = joblib.load(base_path + "topic_vector_train_0830_1015_90")
     elif n_components == 60:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_0925_60")
-        vectorizer = joblib.load(f"../models/lda_model_0830_0925_60")
-        model = joblib.load(f"../models/topic_vector_train_0830_0925_60")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_0925_60")
+        vectorizer = joblib.load(base_path + "lda_model_0830_0925_60")
+        model = joblib.load(base_path + "topic_vector_train_0830_0925_60")
     elif n_components == 30:
-        topic_vectors_train = joblib.load(f"../models/vectorizer_0830_0838_30")
-        vectorizer = joblib.load(f"../models/lda_model_0830_0838_30")
-        model = joblib.load(f"../models/topic_vector_train_0830_0838_30")
+        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_0838_30")
+        vectorizer = joblib.load(base_path + "lda_model_0830_0838_30")
+        model = joblib.load(base_path + "topic_vector_train_0830_0838_30")
     return topic_vectors_train, vectorizer, model
 
 
@@ -362,4 +364,4 @@ class Recommender(Resource):
 api.add_resource(Recommender, "/", endpoint="home")
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=False)
+    app.run(port=5000, debug=True)

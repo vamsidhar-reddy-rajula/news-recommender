@@ -9,13 +9,17 @@
         integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous"> -->
     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/main.css')}}">
 
+    <script src="{{url_for('static',filename='styles/loading.js')}}"></script>
+
     <meta charset="utf-8">
     <title>News Recommender | Catch up with relevant news from the past</title>
 </head>
 
 <body>
-
-    <div class="container px-0 mx-0">
+    <div id="loading">
+        <img src="../static/loading_2.gif"></img>
+    </div>
+    <div class="container px-0 mx-0" id="content">
         <div class="row">
             <div class="col-4 px-5" style="background-color: lightgreen ;">
                 <div id="form">
@@ -31,7 +35,7 @@
                             <textarea class="form-control mt-2" id="article-body" name="article-body"
                                 style="height: 350px;">{{ input['article-body'] }}</textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" onclick="loading();">Submit</button>
                         <!-- <input type="submit" value="submit"> -->
                     </form>
                     <div class='row mt-4'>
@@ -45,7 +49,7 @@
                         <div class='col'>
                             <form action="{{ url_for('home') }}" method="POST">
                                 <input type="hidden" name="btn_identifier" value="feeling_lucky" />
-                                <button type="submit" class="btn btn-secondary">I am feeling lucky</button>
+                                <button type="submit" class="btn btn-secondary" onclick="loading();">Random</button>
                                 <!-- <input type="submit" value="submit"> -->
                             </form>
                         </div>
