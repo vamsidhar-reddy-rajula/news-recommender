@@ -23,19 +23,27 @@
         <div class="row">
             <div class="col-4 px-5" style="background-color: lightgreen ;">
                 <div id="form">
-                    <form action="{{ url_for('home') }}" method="POST">
+                    <form action="{{ url_for('home') }}" method="POST" class="needs-validation" novalidate>
                         <div class="form-group my-3">
                             <input type="hidden" name="btn_identifier" value="article_submission" />
-                            <label for="headline">Headline</label>
+                            <label for="headline" class='form-label'>Headline</label>
                             <textarea class="form-control mt-2" id="headline" name="headline" wrap="soft"
-                                style="height: 100px;">{{ input['heading'] }}</textarea>
+                                style="height: 100px;" required>{{ input['heading'] }}</textarea>
+                            <div class="invalid-feedback">
+                                Please input valid headline
+                            </div>
                         </div>
+
                         <div class="form-group my-3">
-                            <label for="article-body">Article</label>
+                            <label for="article-body" class='form-label'>Article</label>
                             <textarea class="form-control mt-2" id="article-body" name="article-body"
-                                style="height: 350px;">{{ input['article-body'] }}</textarea>
+                                style="height: 300px;" required>{{ input['article-body'] }}</textarea>
+                            <div class="invalid-feedback">
+                                Please input valid article content
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" onclick="loading();">Submit</button>
+                        <button type="submit" class="btn btn-primary"
+                            onclick="loading_submit(); validation();">Submit</button>
                         <!-- <input type="submit" value="submit"> -->
                     </form>
                     <div class='row mt-4'>
@@ -49,7 +57,8 @@
                         <div class='col'>
                             <form action="{{ url_for('home') }}" method="POST">
                                 <input type="hidden" name="btn_identifier" value="feeling_lucky" />
-                                <button type="submit" class="btn btn-secondary" onclick="loading();">Random</button>
+                                <button type="submit" class="btn btn-secondary"
+                                    onclick="loading_random();">Random</button>
                                 <!-- <input type="submit" value="submit"> -->
                             </form>
                         </div>
