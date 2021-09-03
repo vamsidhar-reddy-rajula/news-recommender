@@ -1,5 +1,5 @@
 from os import remove
-from flask import Flask, json, request, jsonify, render_template, make_response
+from flask import Flask, json, request, jsonify, render_template, make_response, session
 from flask_restful import Api, Resource
 import joblib
 import numpy as np
@@ -7,6 +7,7 @@ import pandas as pd
 import contractions
 import random
 import os
+import uuid
 
 from nltk.tokenize import word_tokenize
 from string import punctuation
@@ -23,6 +24,7 @@ from datetime import datetime
 from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = uuid.uuid4().hex
 api = Api(app)
 
 df_articles = pd.read_csv("../data/interim/articles_processed.csv")
@@ -300,17 +302,25 @@ def get_results(heading=None, text=None):
 
 
 class Recommender(Resource):
-    data = []
-    input = {"heading": "", "article-body": ""}
-
     def get(self):
         """
         Default page
         """
         headers = {"Content-Type": "text/html"}
+        if "heading" not in session.keys():
+            session["heading"] = ""
+        if "article-body" not in session.keys():
+            session["article-body"] = ""
+        if "data" not in session.keys():
+            session["data"] = []
         return make_response(
             render_template(
-                "index.html", data=Recommender.data, input=Recommender.input
+                "index.html",
+                data=session["data"],
+                input={
+                    "heading": session["heading"],
+                    "article-body": session["article-body"],
+                },
             ),
             200,
             headers,
@@ -324,37 +334,36 @@ class Recommender(Resource):
             # args = request.args
             # heading = args["heading"]
             # text = args["text"]
-            heading = request.form["headline"]
-            text = request.form["article-body"]
-            Recommender.input["heading"] = heading
-            Recommender.input["article-body"] = text
+            session["heading"] = request.form["headline"]
+            session["article-body"] = request.form["article-body"]
             # return jsonify(get_results(heading=heading, text=text))
-            Recommender.data = get_results(
-                heading=Recommender.input["heading"],
-                text=Recommender.input["article-body"],
+            session["data"] = get_results(
+                heading=session["heading"],
+                text=session["article-body"],
             )
         elif request.form["btn_identifier"] == "clear_values":
-            Recommender.data.clear()
-            Recommender.input["heading"] = ""
-            Recommender.input["article-body"] = ""
+            session["data"] = ""
+            session["heading"] = ""
+            session["article-body"] = ""
         elif request.form["btn_identifier"] == "feeling_lucky":
             test_indices = random.sample(range(df_test.shape[0]), 1)
-            Recommender.input["heading"] = df_test.iloc[
-                test_indices
-            ].article_heading.values[0]
-            Recommender.input["article-body"] = df_test.iloc[
-                test_indices
-            ].article_body.values[0]
+            session["heading"] = df_test.iloc[test_indices].article_heading.values[0]
+            session["article-body"] = df_test.iloc[test_indices].article_body.values[0]
             # return jsonify(get_results(heading=heading, text=text))
-            Recommender.data = get_results(
-                heading=Recommender.input["heading"],
-                text=Recommender.input["article-body"],
+            session["data"] = get_results(
+                heading=session["heading"],
+                text=session["article-body"],
             )
 
         headers = {"Content-Type": "text/html"}
         return make_response(
             render_template(
-                "index.html", data=Recommender.data, input=Recommender.input
+                "index.html",
+                data=session["data"],
+                input={
+                    "heading": session["heading"],
+                    "article-body": session["article-body"],
+                },
             ),
             200,
             headers,
