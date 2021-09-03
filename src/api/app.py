@@ -1,5 +1,5 @@
 from os import remove
-from flask import Flask, json, request, jsonify, render_template, make_response
+from flask import Flask, json, request, jsonify, render_template, make_response, session
 from flask_restful import Api, Resource
 import joblib
 import numpy as np
@@ -21,9 +21,15 @@ from nltk.stem.porter import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 from datetime import datetime
 from sklearn.metrics.pairwise import cosine_similarity
+from flask_jwt import JWT, jwt_required
+
+from security import authenticate, identity
 
 app = Flask(__name__)
+app.secret_key = "asdsadad"
 api = Api(app)
+
+jwt = JWT(app, authenticate, identity)  # /auth
 
 df_articles = pd.read_csv("../data/interim/articles_processed.csv")
 df_articles.article_published_on = df_articles.article_published_on.astype(
@@ -116,7 +122,7 @@ def get_topic_vectors(X, model, fit=False):
         return model.transform(X)
 
 
-def get_saved_models(n_components):
+def load_saved_models_to_memory(n_components):
     base_path = "D:\\Models\\news recommender\\"
     if n_components == 300:
         topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1513_300")
@@ -150,10 +156,15 @@ def get_saved_models(n_components):
         topic_vectors_train = joblib.load(base_path + "vectorizer_0830_0838_30")
         vectorizer = joblib.load(base_path + "lda_model_0830_0838_30")
         model = joblib.load(base_path + "topic_vector_train_0830_0838_30")
-    return topic_vectors_train, vectorizer, model
+    saved_models[n_components]["topic_vectors_train"] = topic_vectors_train
+    saved_models[n_components]["vectorizer"] = vectorizer
+    saved_models[n_components]["model"] = model
 
 
 components_saved = [300, 240, 180, 150, 120, 90, 60, 30]
+saved_models = {300: {}, 240: {}, 180: {}, 150: {}, 120: {}, 90: {}, 60: {}, 30: {}}
+for component in components_saved:
+    load_saved_models_to_memory(component)
 
 
 def get_similar_articles(similarity_scores, top_n_values=5):
@@ -238,7 +249,11 @@ def ensemble_similarity_scores(
 ):
     component_similarity_scores = []
     for component in components:
-        topic_vectors_train, vectorizer, model = get_saved_models(component)
+        topic_vectors_train, vectorizer, model = (
+            saved_models[component]["topic_vectors_train"],
+            saved_models[component]["vectorizer"],
+            saved_models[component]["model"],
+        )
         test_lemmas = text_pipeline(text)
         lemma_test_vectors = text_vectorizer(test_lemmas, vectorizer)
         topic_vectors_test = get_topic_vectors(lemma_test_vectors, model)
@@ -271,7 +286,7 @@ def ensemble_similarity_scores(
 #     return result
 
 
-def get_results(heading=None, text=None):
+def get_results(heading=None, text=None, pattern=False):
     factor = np.ones((df_train.shape[0])).reshape(-1, 1)
     # weights = np.random.dirichlet(np.ones(8),size=1).reshape(8,)
     weights = [
@@ -296,21 +311,35 @@ def get_results(heading=None, text=None):
     similarity_scores = np.average(
         np.array(component_similarity_scores), axis=0, weights=weights
     )
-    return get_similar_articles(similarity_scores, top_n_values=10)
+    if not pattern:
+        return get_similar_articles(similarity_scores, top_n_values=10)
+    else:
+        articles = []
+        for _ in range(5):
+            articles.append(get_similar_articles(similarity_scores, top_n_values=1)[0])
+        return articles
 
 
 class Recommender(Resource):
-    data = []
-    input = {"heading": "", "article-body": ""}
-
     def get(self):
         """
         Default page
         """
         headers = {"Content-Type": "text/html"}
+        if "heading" not in session.keys():
+            session["heading"] = ""
+        if "article-body" not in session.keys():
+            session["article-body"] = ""
+        if "data" not in session.keys():
+            session["data"] = []
         return make_response(
             render_template(
-                "index.html", data=Recommender.data, input=Recommender.input
+                "index.html",
+                data=session["data"],
+                input={
+                    "heading": session["heading"],
+                    "article-body": session["article-body"],
+                },
             ),
             200,
             headers,
@@ -324,37 +353,36 @@ class Recommender(Resource):
             # args = request.args
             # heading = args["heading"]
             # text = args["text"]
-            heading = request.form["headline"]
-            text = request.form["article-body"]
-            Recommender.input["heading"] = heading
-            Recommender.input["article-body"] = text
+            session["heading"] = request.form["headline"]
+            session["article-body"] = request.form["article-body"]
             # return jsonify(get_results(heading=heading, text=text))
-            Recommender.data = get_results(
-                heading=Recommender.input["heading"],
-                text=Recommender.input["article-body"],
+            session["data"] = get_results(
+                heading=session["heading"],
+                text=session["article-body"],
             )
         elif request.form["btn_identifier"] == "clear_values":
-            Recommender.data.clear()
-            Recommender.input["heading"] = ""
-            Recommender.input["article-body"] = ""
+            session["data"] = ""
+            session["heading"] = ""
+            session["article-body"] = ""
         elif request.form["btn_identifier"] == "feeling_lucky":
             test_indices = random.sample(range(df_test.shape[0]), 1)
-            Recommender.input["heading"] = df_test.iloc[
-                test_indices
-            ].article_heading.values[0]
-            Recommender.input["article-body"] = df_test.iloc[
-                test_indices
-            ].article_body.values[0]
+            session["heading"] = df_test.iloc[test_indices].article_heading.values[0]
+            session["article-body"] = df_test.iloc[test_indices].article_body.values[0]
             # return jsonify(get_results(heading=heading, text=text))
-            Recommender.data = get_results(
-                heading=Recommender.input["heading"],
-                text=Recommender.input["article-body"],
+            session["data"] = get_results(
+                heading=session["heading"],
+                text=session["article-body"],
             )
 
         headers = {"Content-Type": "text/html"}
         return make_response(
             render_template(
-                "index.html", data=Recommender.data, input=Recommender.input
+                "index.html",
+                data=session["data"],
+                input={
+                    "heading": session["heading"],
+                    "article-body": session["article-body"],
+                },
             ),
             200,
             headers,
