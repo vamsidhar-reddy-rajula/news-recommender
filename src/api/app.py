@@ -27,16 +27,18 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = uuid.uuid4().hex
 api = Api(app)
 
-df_articles = pd.read_csv("../data/interim/articles_processed.csv")
+base_path = "D:\\Models\\news recommender\\0905\\"
+df_articles = pd.read_csv(base_path + "data\\interim\\articles_processed_9_3_2021.csv")
+vectorizer = joblib.load(base_path + "vectorizer_0904_2236")
 df_articles.article_published_on = df_articles.article_published_on.astype(
     np.datetime64
 )
 df_train, df_test = (
     df_articles[
-        df_articles.article_published_on < datetime(year=2021, day=20, month=8)
+        df_articles.article_published_on < datetime(year=2021, day=26, month=8)
     ],
     df_articles[
-        df_articles.article_published_on >= datetime(year=2021, day=20, month=8)
+        df_articles.article_published_on >= datetime(year=2021, day=26, month=8)
     ],
 )
 
@@ -119,43 +121,60 @@ def get_topic_vectors(X, model, fit=False):
 
 
 def get_saved_models(n_components):
-    base_path = "D:\\Models\\news recommender\\"
-    if n_components == 300:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1513_300")
-        vectorizer = joblib.load(base_path + "lda_model_0830_1513_300")
-        model = joblib.load(base_path + "topic_vector_train_0830_1513_300")
-    elif n_components == 240:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1406_240")
-        vectorizer = joblib.load(base_path + "lda_model_0830_1406_240")
-        model = joblib.load(base_path + "topic_vector_train_0830_1406_240")
-    elif n_components == 180:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1304_180")
-        vectorizer = joblib.load(base_path + "lda_model_0830_1304_180")
-        model = joblib.load(base_path + "topic_vector_train_0830_1304_180")
+    if n_components == 50:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_50"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_50")
+    elif n_components == 100:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_100"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_100")
     elif n_components == 150:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1205_150")
-        vectorizer = joblib.load(base_path + "lda_model_0830_1205_150")
-        model = joblib.load(base_path + "topic_vector_train_0830_1205_150")
-    elif n_components == 120:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1109_120")
-        vectorizer = joblib.load(base_path + "lda_model_0830_1109_120")
-        model = joblib.load(base_path + "topic_vector_train_0830_1109_120")
-    elif n_components == 90:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_1015_90")
-        vectorizer = joblib.load(base_path + "lda_model_0830_1015_90")
-        model = joblib.load(base_path + "topic_vector_train_0830_1015_90")
-    elif n_components == 60:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_0925_60")
-        vectorizer = joblib.load(base_path + "lda_model_0830_0925_60")
-        model = joblib.load(base_path + "topic_vector_train_0830_0925_60")
-    elif n_components == 30:
-        topic_vectors_train = joblib.load(base_path + "vectorizer_0830_0838_30")
-        vectorizer = joblib.load(base_path + "lda_model_0830_0838_30")
-        model = joblib.load(base_path + "topic_vector_train_0830_0838_30")
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_150"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_150")
+    elif n_components == 200:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_200"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_200")
+    elif n_components == 250:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_250"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_250")
+    elif n_components == 300:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_300"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_300")
+    elif n_components == 350:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_350"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_350")
+    elif n_components == 400:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_400"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_400")
+    elif n_components == 450:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_450"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_450")
+    elif n_components == 500:
+        topic_vectors_train = joblib.load(
+            base_path + "topic_vectors_train_0904_2236_500"
+        )
+        model = joblib.load(base_path + "lda_model_0904_2236_500")
     return topic_vectors_train, vectorizer, model
 
 
-components_saved = [300, 240, 180, 150, 120, 90, 60, 30]
+components_saved = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
 
 
 def get_similar_articles(similarity_scores, top_n_values=5):
@@ -274,18 +293,22 @@ def ensemble_similarity_scores(
 
 
 def get_results(heading=None, text=None):
-    factor = np.ones((df_train.shape[0])).reshape(-1, 1)
-    # weights = np.random.dirichlet(np.ones(8),size=1).reshape(8,)
-    weights = [
-        0.0392685,
-        0.09838475,
-        0.04760199,
-        0.05147573,
-        0.04382252,
-        0.0741635,
-        0.04844888,
-        0.59683412,
-    ]
+    factor = np.ones((df_train.shape[0])).reshape(
+        -1, 1
+    )  # article importance - day-wise weightage
+    weights = np.random.dirichlet(np.ones(len(components_saved)), size=1).reshape(
+        len(components_saved),
+    )
+    # weights = [
+    #     0.0392685,
+    #     0.09838475,
+    #     0.04760199,
+    #     0.05147573,
+    #     0.04382252,
+    #     0.0741635,
+    #     0.04844888,
+    #     0.59683412,
+    # ]
     # factor = get_article_importance_day_wise(growth=1000).values.reshape(-1,1)
     component_similarity_scores = ensemble_similarity_scores(
         heading=heading,
