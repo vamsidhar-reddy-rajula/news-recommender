@@ -292,12 +292,27 @@ def ensemble_similarity_scores(
 #     return result
 
 
-def get_results(heading=None, text=None):
+def get_results(
+    heading=None, text=None, accuracy=1, average_components="True"
+):  # accuracy - 1(fast, low accuracy) and total_accuracy_score (slow, good accuracy)
     factor = np.ones((df_train.shape[0])).reshape(
         -1, 1
     )  # article importance - day-wise weightage
-    weights = np.random.dirichlet(np.ones(len(components_saved)), size=1).reshape(
-        len(components_saved),
+
+    total_accuracy_score = 10
+    if average_components == "True":
+        components_to_consider = components_saved[
+            : round(len(components_saved) * accuracy / total_accuracy_score)
+        ]
+    else:
+        components_to_consider = [
+            components_saved[
+                round((len(components_saved) * accuracy / total_accuracy_score) - 1)
+            ]
+        ]
+    print(components_to_consider)
+    weights = np.random.dirichlet(np.ones(len(components_to_consider)), size=1).reshape(
+        len(components_to_consider),
     )
     # weights = [
     #     0.0392685,
@@ -313,7 +328,7 @@ def get_results(heading=None, text=None):
     component_similarity_scores = ensemble_similarity_scores(
         heading=heading,
         text=text,
-        components=components_saved,
+        components=components_to_consider,
         include_headings=True,
         heading_weightage=0.75,
         factor=factor,
@@ -336,6 +351,11 @@ class Recommender(Resource):
             session["article-body"] = ""
         if "data" not in session.keys():
             session["data"] = []
+        if "accuracy" not in session.keys():
+            session["accuracy"] = 1
+        if "average_components" not in session.keys():
+            session["average-components"] = "True"
+        # print(f'################################{session["average-components"]}')
         return make_response(
             render_template(
                 "index.html",
@@ -343,6 +363,8 @@ class Recommender(Resource):
                 input={
                     "heading": session["heading"],
                     "article-body": session["article-body"],
+                    "accuracy": session["accuracy"],
+                    "average-components": session["average-components"],
                 },
             ),
             200,
@@ -359,10 +381,17 @@ class Recommender(Resource):
             # text = args["text"]
             session["heading"] = request.form["headline"]
             session["article-body"] = request.form["article-body"]
+            session["accuracy"] = int(request.form["accuracy"])
+            session["average-components"] = (
+                "True" if request.form["average"] == "true" else "False"
+            )
+
             # return jsonify(get_results(heading=heading, text=text))
             session["data"] = get_results(
                 heading=session["heading"],
                 text=session["article-body"],
+                accuracy=session["accuracy"],
+                average_components=session["average-components"],
             )
         elif request.form["btn_identifier"] == "clear_values":
             session["data"] = ""
@@ -372,10 +401,12 @@ class Recommender(Resource):
             test_indices = random.sample(range(df_test.shape[0]), 1)
             session["heading"] = df_test.iloc[test_indices].article_heading.values[0]
             session["article-body"] = df_test.iloc[test_indices].article_body.values[0]
+            # session["accuracy"] = int(request.form["accuracy"])
             # return jsonify(get_results(heading=heading, text=text))
             session["data"] = get_results(
                 heading=session["heading"],
                 text=session["article-body"],
+                accuracy=session["accuracy"],
             )
 
         headers = {"Content-Type": "text/html"}
@@ -386,6 +417,8 @@ class Recommender(Resource):
                 input={
                     "heading": session["heading"],
                     "article-body": session["article-body"],
+                    "accuracy": session["accuracy"],
+                    "average-components": session["average-components"],
                 },
             ),
             200,

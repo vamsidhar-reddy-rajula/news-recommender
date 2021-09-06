@@ -5,6 +5,10 @@ body,
     height: 100%;
 }
 
+#article-body {
+    height: 250px;
+}
+
 #form {
     position: fixed;
     top: 30px;

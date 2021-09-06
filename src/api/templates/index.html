@@ -9,6 +9,7 @@
         integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous"> -->
     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/main.css')}}">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="{{url_for('static',filename='styles/loading.js')}}"></script>
 
     <meta charset="utf-8">
@@ -33,14 +34,48 @@
                                 Please input valid headline
                             </div>
                         </div>
-
                         <div class="form-group my-3">
                             <label for="article-body" class='form-label'>Article</label>
                             <textarea class="form-control mt-2" id="article-body" name="article-body"
-                                style="height: 300px;" required>{{ input['article-body'] }}</textarea>
+                                required>{{ input['article-body'] }}</textarea>
                             <div class="invalid-feedback">
                                 Please input valid article content
                             </div>
+                        </div>
+                        <div>
+                            <label for="customRange" class="form-label">Accuracy</label>
+                            <span id="rangeval">{{ input['accuracy'] }}
+                                <!-- Default value --></span>
+                            <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Choose low number for faster results at the cost of accuracy">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                                </svg>
+                            </span>
+                            <input type="range" class="form-range" min="1" max="10" step="1" id="customRange"
+                                value="{{ input['accuracy'] }}"
+                                onchange="document.getElementById('rangeval').innerText = document.getElementById('customRange').value"
+                                name="accuracy">
+
+                        </div>
+                        <div class="form-check">
+                            <meta id="checkbox-status" data-checked="{{ input['average-components'] }}">
+                            <input class=" form-check-input" type="checkbox" value="" id="flexCheckChecked"
+                                onchange="checkboxChanged();">
+                            <input id='checkBoxHidden' type='hidden' name='average'>
+                            <label class="form-check-label" for="flexCheckChecked">
+                                Average models (Ensemble)
+                            </label>
+                            <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Average the similarity scores from models ranging from granular topics to broad topics- Robust results">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                                </svg>
+                            </span>
                         </div>
                         <button type="submit" class="btn btn-primary"
                             onclick="loading_submit(); validation();">Submit</button>

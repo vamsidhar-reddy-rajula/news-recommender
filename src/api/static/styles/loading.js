@@ -1,3 +1,4 @@
+
 function loading_submit(){
     var article_body = document.getElementById('article-body').value;
     var headline = document.getElementById('headline').value;
@@ -37,3 +38,30 @@ function validation() {
         }, false)
       })
   }
+
+
+
+$(document).ready(function(){
+  var checkbox_status = $("#checkbox-status").data("checked");
+  if (checkbox_status == "False"){
+      $("#flexCheckChecked").attr("checked",false);
+      $('#checkBoxHidden').val('false')
+  }else{
+    $("#flexCheckChecked").attr("checked",true);
+    $('#checkBoxHidden').val('true')
+  }
+});
+
+function checkboxChanged(){
+
+    if($('#flexCheckChecked').is(":checked")) {
+        $('#checkBoxHidden').val('true')
+    }else{
+      $('#checkBoxHidden').val('false')
+    }   
+  }
+
+
+
+
+
