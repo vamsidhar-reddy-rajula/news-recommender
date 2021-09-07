@@ -11,6 +11,11 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="{{url_for('static',filename='styles/loading.js')}}"></script>
+    <script src="{{url_for('static',filename='styles/date.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous">
+    </script>
+
 
     <meta charset="utf-8">
     <title>News Recommender | Catch up with relevant news from the past</title>
@@ -21,8 +26,8 @@
         <img src="../static/loading_2.gif"></img>
     </div>
     <div class="container px-0 mx-0" id="content">
-        <div class="row">
-            <div class="col-4 px-5" style="background-color: lightgreen ;">
+        <div class="row" id="main-row">
+            <div class="col-4 px-5" id="form-column">
                 <div id="form">
                     <form action="{{ url_for('home') }}" method="POST" class="needs-validation" novalidate>
                         <div class="form-group my-3">
@@ -101,22 +106,38 @@
                 </div>
             </div>
             <div class="col-8">
-                <div class='row mx-4 my-4'>
+                <div id="heading" class='row mx-4 my-4'>
                     {% if data|length != 0 %}
-                    <h2>Recommended Articles</h2>
+                    <h2 class="col-11">Recommended Articles</h2>
+                    <div class="dropdown col-1">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Sort by
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="#" onclick="sort_cards_by_similarity();">Similarity
+                                    Score</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sort_cards_by_date();">Date published</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="cards">
                     {% for item in data %}
-                    <div class="card m-2" style="width: 24rem;">
+                    <div class="card m-2" id="card">
                         <div class="card-body">
                             <h5 class="card-title">{{item.article_heading}}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">{{item.similarity_score}}% similar</h6>
+                            <h6 id="date" class="card-subtitle mb-2 text-muted">{{item.article_date}}</h6>
+                            <h6 id="similarity" class="card-subtitle mb-2 text-muted">{{item.similarity_score}}% similar
+                            </h6>
                             <p class="card-text">{{item.article_subheading}}</p>
                             <a href="{{item.article_url}}" class="btn btn-outline-primary" target="_blank">Visit
                                 source</a>
                         </div>
                     </div>
                     {% endfor %}
-                    {% endif %}
                 </div>
+                {% endif %}
             </div>
 
         </div>

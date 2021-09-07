@@ -1,8 +1,18 @@
 html,
 body,
-.container,
-.row {
+.container {
     height: 100%;
+}
+
+#main-row {
+    height: 100%;
+}
+
+#form-column {
+    position: relative;
+    background-color: lightgreen;
+    /* height: max-content; */
+    /* height: 100%; */
 }
 
 #article-body {
@@ -10,9 +20,9 @@ body,
 }
 
 #form {
-    position: fixed;
-    top: 30px;
-    left: 30px;
+    position: relative;
+    top: 10px;
+    left: 10px;
     width: 350px;
 }
 
@@ -27,3 +37,29 @@ div#loading {
     /* background: url('/static/loading.gif') no-repeat; */
     cursor: wait;
 }
+
+#cards {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+#card {
+    display: inline-block;
+    width: 100%;
+    height: 15rem;
+    /* position: absolute;
+    bottom: 0; */
+}
+
+/* #heading {
+    display: flex;
+} */
+
+/* #recommended {
+    display: block;
+}
+
+#dropdown {
+    display: block;
+} */

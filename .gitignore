@@ -91,3 +91,6 @@ target/
 
 #models
 /models/*
+
+
+node_modules/*

@@ -187,7 +187,9 @@ def get_similar_articles(similarity_scores, top_n_values=5):
             {
                 "article_heading": df_train.iloc[indices].article_heading,
                 "similarity_score": np.round(values[:, i] * 100, decimals=2),
-                "article_date": df_train.iloc[indices].article_published_on,
+                "article_date": df_train.iloc[indices].article_published_on.dt.strftime(
+                    "%B %d %Y"
+                ),
                 "article_url": df_train.iloc[indices].article_url,
                 "article_subheading": df_train.iloc[indices].article_subheading,
             }
@@ -310,10 +312,15 @@ def get_results(
                 round((len(components_saved) * accuracy / total_accuracy_score) - 1)
             ]
         ]
-    print(components_to_consider)
+    # print(components_to_consider)
     weights = np.random.dirichlet(np.ones(len(components_to_consider)), size=1).reshape(
         len(components_to_consider),
     )
+
+    weights = np.sort(weights)
+    # weights = np.array([5, 5, 5, 5, 10, 10, 20, 20, 10, 10])
+    # weights = weights / weights.sum(axis=0, keepdims=1)  # or simply : a/a.sum(0)
+
     # weights = [
     #     0.0392685,
     #     0.09838475,
@@ -401,7 +408,7 @@ class Recommender(Resource):
             test_indices = random.sample(range(df_test.shape[0]), 1)
             session["heading"] = df_test.iloc[test_indices].article_heading.values[0]
             session["article-body"] = df_test.iloc[test_indices].article_body.values[0]
-            # session["accuracy"] = int(request.form["accuracy"])
+            session["accuracy"] = 1
             # return jsonify(get_results(heading=heading, text=text))
             session["data"] = get_results(
                 heading=session["heading"],

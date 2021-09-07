@@ -62,6 +62,48 @@ function checkboxChanged(){
   }
 
 
+  function sort_cards_by_date(){
+    var card_board = $('#cards')
+
+    cards = card_board.children('div').detach().get()
+
+
+    cards.sort(function(a, b) {
+      date_1 = Date.parse($(a).find("#date").text())
+      date_2 = Date.parse($(b).find("#date").text())
+      return new Date(date_2 - date_1);
+    });
+    
+
+
+    card_board.append(cards); // <== switched this to append
+
+    // console.log()
+
+  }
+  
+  function sort_cards_by_similarity(){
+    var card_board = $('#cards')
+
+    cards = card_board.children('div').detach().get()
+
+
+    cards.sort(function(a, b) {
+      score_1 = $(a).find("#similarity").text().replace("% similar","")
+      score_2 = $(b).find("#similarity").text().replace("% similar","")
+      // console.log(score_1)
+      return score_2 - score_1
+    });
+    
+
+
+    card_board.append(cards); // <== switched this to append
+
+    // console.log()
+
+  }
+
+
 
 
 
