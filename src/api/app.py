@@ -312,6 +312,8 @@ def get_results(
                 round((len(components_saved) * accuracy / total_accuracy_score) - 1)
             ]
         ]
+
+    np.random.seed(123)
     # print(components_to_consider)
     weights = np.random.dirichlet(np.ones(len(components_to_consider)), size=1).reshape(
         len(components_to_consider),
